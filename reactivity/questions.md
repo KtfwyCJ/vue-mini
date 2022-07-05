@@ -67,3 +67,27 @@ console.log(ws) // {}
 > 因为所有的强引用都断开了，那么垃圾回收认为该引用{name:"alex"}不需要了，就会将他销毁。那么对应的ws实例所用到的该引用也都不复存在了，即使ws实例还在使用着该引用
 
 [参考文档](https://juejin.cn/post/7039678880071827463)
+
+3. computed的原理
+4. watch的原理
+    1. deep的原理？
+    2. immediate的原理？
+
+5. vue是怎么区分ref(1)和reactive({value: 1})的？
+> 内部维护了一个__v_isRef的属性值，不可写只可读，有这个属性表示当前数据是个ref
+
+6. vue是怎么处理在return里加入展开运算符导致响应式丢失的？
+> toRefs函数，本质上还是将响应式数据转换成类似于ref的结构
+
+7. 为什么模板里读取ref值不需要写成xx.value？为什么需要自动脱ref?怎么实现的？
+> 为了减轻用户的心智负担，通常模板中访问数据不需要写`.value`即可直接读取。通过一个proxyRefs的代理，如果监测到当前读取的值是ref(即有__v_isRef属性)，那么直接返回其value值。
+``` JavaScript
+const MyComponent = {
+    setup(){
+        const count = ref(0)
+
+        // 返回的这个对象会传递给proxyRefs
+        return {count}
+    }
+}
+```

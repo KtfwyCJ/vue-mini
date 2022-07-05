@@ -1,0 +1,59 @@
+<!-- 声明式UI的设计思路 -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Virtual DOM</title>
+  </head>
+  <body>
+    <script>
+      // 虚拟DOM：以JavaScript对象的形式声明UI结构，这种方式更灵活
+      // 组成结构：tagName（标签名称）、props（标签属性、事件等等）、children（string | dom[]）：子节点组或者字符串
+      const dom = {
+        tag: "div",
+        props: {
+          id: "container",
+          onClick: () => {
+            console.log("click");
+          },
+        },
+        children: [
+          {
+            tag: "p",
+            props: {
+              class: "content",
+            },
+            children: "This is a demo of Virtual DOM",
+          },
+        ],
+      };
+
+      function Render(dom, root) {
+        const node = document.createElement(dom.tag);
+        Object.keys(dom.props).forEach((key) => {
+          if (key.startsWith("on")) {
+            // 处理事件
+            node.addEventListener(key.slice(2).toLowerCase(), dom.props[key]);
+          } else {
+            node.setAttribute(key, dom.props[key]);
+          }
+        });
+        if (dom.children) {
+          if (typeof dom.children === "string") {
+            const text = document.createTextNode(dom.children);
+            node.appendChild(text);
+          } else {
+            dom.children.forEach((child) => {
+              Render(child, node);
+            });
+          }
+        }
+        root.appendChild(node);
+      }
+
+      Render(dom, document.body);
+    </script>
+  </body>
+</html>
